@@ -6,6 +6,12 @@ variable "project_id" {
 variable "repo_name"{
 }
 
+variable "region" {
+  description = "GCP region"
+  type        = string
+  default     = "us-central1" # Will be commented out in C2D
+}
+
 variable "gcr_region" {
   description = "Name of the GCP region where the GCR registry is located."
   type        = string

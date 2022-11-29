@@ -12,6 +12,8 @@ resource "time_sleep" "sleep_x" {
   ]
 }
 
+
+# Build Cloud Build Trigger
 resource "google_cloudbuild_trigger" "cloud_build_trigger" {
   provider    = google-beta
   description = "Cloud Source Repository Trigger ${var.repo_name.name} (${var.branch_name})"
@@ -26,3 +28,31 @@ resource "google_cloudbuild_trigger" "cloud_build_trigger" {
   filename = "cloudbuild.yaml"
   depends_on = [time_sleep.sleep_x]
 }
+
+
+# Launch Cloud Build Trigger
+resource "google_project_iam_member" "cloudbuild_roles" {
+  depends_on = [google_cloudbuild_trigger.cloud_build_trigger]
+  for_each   = toset(["roles/run.admin", "roles/iam.serviceAccountUser"])
+  project    = var.project_id
+  role       = each.key
+  member     = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+}
+
+
+# Deploy to Cloud Run
+locals {
+  image = "gcr.io/${var.project_id}/pos:v1.1"
+}
+
+module "cloudrun" {
+  source  = "../run"
+  project_id = var.project_id
+  region = var.region
+  docker-image = local.image
+  depends_on = [google_project_iam_member.cloudbuild_roles]
+}
+
+
+
+# Deploy to GKE

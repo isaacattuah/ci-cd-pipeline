@@ -2,7 +2,13 @@
 variable "project_id" {}
 variable "region" {}
 variable "docker-image" {} # Assign to a value!
-variable "service-name" {}
+
+variable "service-name" {
+  description = "Cloud Run service-name"
+  type    = string
+  default = "cloudrun-srv"
+}
+
 variable "services_to_enable" {
     description = "List of GCP Services to enable"
     type    = list(string)
@@ -11,6 +17,7 @@ variable "services_to_enable" {
         "iam.googleapis.com"
     ]
 }
+
 variable "cloud_run_iam_roles" {
     description = "Cloud Run Account Roles"
     type        = list(string)
