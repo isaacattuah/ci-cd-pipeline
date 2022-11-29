@@ -26,17 +26,22 @@ resource "google_cloudbuild_trigger" "cloud_build_trigger" {
 
   
   filename = "cloudbuild.yaml"
-  depends_on = [time_sleep.sleep_x]
+  service_account = google_service_account.cloudbuild_service_account.id
+  depends_on = [time_sleep.sleep_x, google_service_account.cloudbuild_service_account]
 }
 
 
-# Launch Cloud Build Trigger
+# Launch Cloud Build Trigger Service Account
+resource "google_service_account" "cloudbuild_service_account" {
+  account_id = "my-service-account"
+}
+
 resource "google_project_iam_member" "cloudbuild_roles" {
   depends_on = [google_cloudbuild_trigger.cloud_build_trigger]
   for_each   = toset(["roles/run.admin", "roles/iam.serviceAccountUser"])
   project    = var.project_id
   role       = each.key
-  member     = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+  member      = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
 }
 
 
