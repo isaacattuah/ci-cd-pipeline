@@ -1,4 +1,3 @@
-
 # GCP Project Name
 variable "project_id" {}
 variable "vpc-name" {}
@@ -17,12 +16,6 @@ variable "regions" {
             cidr = "10.0.0.0/24"
             zone = "us-central1-a"
             management-cidr = "192.168.1.0/28"
-        },
-        {
-            region = "us-east1"
-            cidr = "10.0.1.0/24"
-            zone = "us-east1-b"
-            management-cidr = "192.168.1.16/28"
         }
     ]
 }

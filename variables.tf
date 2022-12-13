@@ -1,16 +1,31 @@
-
-# Some variables might move to modules
 variable "region" {
   type    = string
   description = "Region to run cloud run"
   default = "us-central1"
 }
 
-# variable "docker-image" {
-#   type = string
-#   description = "Full docker path of container to run"
-#   default = "us-docker.pkg.dev/cloudrun/container/hello"
-# }
+variable "regions" { 
+    type = list(object({
+        region = string
+        cidr = string
+        zone = string
+        management-cidr = string
+        })
+    )
+    default = [{
+            region = "us-central1"
+            cidr = "10.0.0.0/24"
+            zone = "us-central1-a"
+            management-cidr = "192.168.1.0/28"
+        }
+    ]
+}
+
+variable "vpc-name" {
+    type = string
+    description = "Custom VPC Name"
+    default = "cicd-vpc"
+}
 
 
 

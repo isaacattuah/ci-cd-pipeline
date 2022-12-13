@@ -32,7 +32,9 @@ resource "null_resource" "git_clone" {
  # Clone local repo (# cp ${path.module}/files/* . on line 37 and touch test.txt for testing)
  provisioner "local-exec" {
    command = <<EOF
-cd ./modules/cloud_source_repo
+cd ./modules/cloud_source_repo/files
+sed -i 's/$PROJECT_ID/${var.project_id}/g' ./deployment.yaml
+cd ..
 gcloud source repos clone example-repo
 cp -r ./files/* example-repo
 cd example-repo
@@ -41,6 +43,8 @@ git config --global user.name \"Your Name\"
 git add -A .
 git commit -m "first commit"
 git push origin master
+cd ..
+rm -rf example-repo
 EOF
  }
 depends_on = [

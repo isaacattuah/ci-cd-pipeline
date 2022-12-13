@@ -12,7 +12,7 @@ resource "google_project_service" "enable-services" {
 resource "google_container_cluster" "primary" {
     provider = google-beta
     for_each = {for a_subnet in var.regions: a_subnet.region => a_subnet}
-    name     = "gke-cluster-${each.value.region}"
+    name     = "my-gke-cluster"
     location = "${each.value.region}"
     release_channel {
         channel = "RAPID"

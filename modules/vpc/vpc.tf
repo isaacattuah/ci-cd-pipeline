@@ -1,9 +1,3 @@
-# ----------------------------------------------------------------------------------------------------------------------
-# CREATE VPC & Subnets
-# ----------------------------------------------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------------------------------------------
-# Enable APIs
-# ----------------------------------------------------------------------------------------------------------------------
 resource "google_project_service" "enable-services" {
   for_each = toset(var.services_to_enable)
   project = var.project_id
@@ -32,32 +26,5 @@ resource "google_compute_subnetwork" "subnets" {
   
   depends_on = [
     google_compute_network.demo-vpc
-    ]
-}
-resource "google_compute_router" "primary" {
-  for_each = google_compute_subnetwork.subnets
-  name    = "${each.value.region}-router"
-  region  = "${each.value.region}"
-  network = google_compute_network.demo-vpc.id
-  bgp {
-    asn = 64514
-  }
-  depends_on = [
-    google_compute_subnetwork.subnets
-    ]
-}
-resource "google_compute_router_nat" "nat" {
-  for_each = google_compute_router.primary
-  name                               = "${each.value.region}-nat"
-  router                             = "${each.value.name}"
-  region                             = "${each.value.region}"
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
-  log_config {
-    enable = true
-    filter = "ERRORS_ONLY"
-  }
-  depends_on = [
-    google_compute_router.primary
     ]
 }

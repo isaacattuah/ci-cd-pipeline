@@ -1,6 +1,3 @@
-# ----------------------------------------------------------------------------------------------------------------------
-# CREATE VPC & Subnets
-# -----
 resource "google_compute_global_address" "private_ip_alloc" {
   name          = "private-ip-alloc"
   purpose       = "VPC_PEERING"
