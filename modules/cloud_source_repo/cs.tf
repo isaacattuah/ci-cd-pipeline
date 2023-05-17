@@ -12,15 +12,25 @@ resource "google_project_service" "enabled_services" {
 
 
 # Make Cloud Source Repo
+
+# Clone Existing Repo and Push to Cloud Source Repo
+resource "time_sleep" "sleep_x" {
+  create_duration = "30s"
+  depends_on = [
+    google_project_service.enabled_services
+  ]
+}
+
+
 resource "google_sourcerepo_repository" "repo" {
    depends_on = [
-    google_project_service.enabled_services
+    time_sleep.sleep_x
   ]    
   name = var.repository_name
 }
 
 # Clone Existing Repo and Push to Cloud Source Repo
-resource "time_sleep" "sleep_x" {
+resource "time_sleep" "sleep_y" {
   create_duration = "30s"
   depends_on = [
     google_sourcerepo_repository.repo
@@ -34,6 +44,9 @@ resource "null_resource" "git_clone" {
    command = <<EOF
 cd ./modules/cloud_source_repo/files
 sed -i 's/$PROJECT_ID/${var.project_id}/g' ./deployment.yaml
+sed -i 's/$PROJECT_ID/${var.project_id}/g' ./cloudbuildrun.yaml
+sed -i 's/$PROJECT_ID/${var.project_id}/g' ./cloudbuildgke.yaml
+sed -i 's/$PROJECT_ID/${var.project_id}/g' ./cloudbuildgce.yaml
 cd ..
 gcloud source repos clone example-repo
 cp -r ./files/* example-repo
@@ -48,7 +61,7 @@ rm -rf example-repo
 EOF
  }
 depends_on = [
- time_sleep.sleep_x
+ time_sleep.sleep_y
 ]
 
 }
